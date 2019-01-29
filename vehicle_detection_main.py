@@ -15,7 +15,7 @@ import tarfile
 import tensorflow as tf
 import zipfile
 import cv2
-import numpy as np
+# import numpy as np
 import csv
 import time
 
@@ -35,7 +35,8 @@ with open('traffic_measurement.csv', 'w') as f:
         'Vehicle Type/Size, Vehicle Color, Vehicle Movement Direction, Vehicle Speed (km/h)'
     writer.writerows([csv_line.split(',')])
 
-if tf.__version__ < '1.4.0':
+if tf.__version__ < '1.04.0':
+    print(tf.__version__)
     raise ImportError('Please upgrade your tensorflow installation to v1.4.* or later!'
                       )
 
@@ -48,17 +49,19 @@ total_passed_vehicle = 0  # using it to count vehicles
 # By default I use an "SSD with Mobilenet" model here. See the detection model zoo (https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md) for a list of other models that can be run out-of-the-box with varying speeds and accuracies.
 # What model to download.
 MODEL_NAME = 'ssd_mobilenet_v1_coco_2017_11_17'
+# MODEL_NAME = '/hom/e/student/Downloads/Suresh_Vairamuthu_Murugesan/darkflow/built_graph'
 MODEL_FILE = MODEL_NAME + '.tar.gz'
 DOWNLOAD_BASE = \
     'http://download.tensorflow.org/models/object_detection/'
 
 # Path to frozen detection graph. This is the actual model that is used for the object detection.
 PATH_TO_CKPT = MODEL_NAME + '/frozen_inference_graph.pb'
+# PATH_TO_CKPT = MODEL_NAME + '/yolov2.pb'
 
 # List of the strings that is used to add correct label for each box.
 PATH_TO_LABELS = os.path.join('data', 'mscoco_label_map.pbtxt')
 
-NUM_CLASSES = 90
+NUM_CLASSES = 80
 
 # Download Model
 # uncomment if you have not download the model yet
@@ -126,6 +129,7 @@ def object_detection_function():
                     sess.run([detection_boxes, detection_scores,
                              detection_classes, num_detections],
                              feed_dict={image_tensor: image_np_expanded})
+                # print("counter =", counter)
 
                 # Visualization of the results of a detection.
                 (counter, csv_line) = \
@@ -139,6 +143,8 @@ def object_detection_function():
                     use_normalized_coordinates=True,
                     line_thickness=4,
                     )
+
+                # print("counter =", counter)
 
                 total_passed_vehicle = total_passed_vehicle + counter
 
